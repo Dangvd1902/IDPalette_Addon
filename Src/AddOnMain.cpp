@@ -5,7 +5,6 @@
 #include <shellapi.h>
 
 #include <array>
-#include <cstdint>
 #include <filesystem>
 #include <string>
 
@@ -35,7 +34,7 @@ std::filesystem::path GetAddonDirectory ()
         modulePath.data (),
         static_cast<DWORD> (modulePath.size ()));
 
-    if (length == 0 || length >= modulePath.size ()) {
+    if (length == 0 || static_cast<std::size_t> (length) >= modulePath.size ()) {
         return {};
     }
 
@@ -90,7 +89,17 @@ std::wstring GetPaletteWindowTitle (const std::filesystem::path& addonDirectory)
 
 bool IsExecutableFile (const std::filesystem::path& path)
 {
-    if (path.empty () || path.extension () != L".exe") {
+    if (path.empty ()) {
+        return false;
+    }
+
+    const auto extension = path.extension ().native ();
+    if (CompareStringOrdinal (
+            extension.c_str (),
+            static_cast<int> (extension.size ()),
+            L".exe",
+            4,
+            TRUE) != CSTR_EQUAL) {
         return false;
     }
 
