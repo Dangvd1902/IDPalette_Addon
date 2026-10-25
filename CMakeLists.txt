@@ -90,6 +90,13 @@ endforeach ()
 target_compile_definitions (${PROJECT_NAME} PRIVATE WINDOWS _USRDLL UNICODE _UNICODE)
 target_compile_options (${PROJECT_NAME} PRIVATE /W3 /EHsc /utf-8 /Zc:wchar_t-)
 
+# Archicad's add-on loader requires these exported entry-address tables.
+# This follows Graphisoft's official archicad-addon-cmake Windows link setup.
+target_link_options (${PROJECT_NAME} PRIVATE
+    "/export:GetExportedFuncAddrs,@1"
+    "/export:SetImportedFuncAddrs,@2"
+)
+
 file (GLOB MODULE_INC_DIRS CONFIGURE_DEPENDS
     "${SUPPORT_DIR}/Modules/*")
 target_include_directories (${PROJECT_NAME} PRIVATE
