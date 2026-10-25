@@ -111,7 +111,13 @@ bool IsExecutableFile (const std::filesystem::path& path)
 
 void ReportLaunchError (const char* message)
 {
-    ACAPI_WriteReport (message, true);
+    // Use a Windows message box so error reporting does not depend on optional
+    // Archicad report API declarations in different DevKit layouts.
+    MessageBoxA (
+        nullptr,
+        message,
+        "ID & Custom Properties Launcher",
+        MB_OK | MB_ICONERROR);
 }
 
 GSErrCode MenuCommandHandler (const API_MenuParams* menuParams)
@@ -126,7 +132,7 @@ GSErrCode MenuCommandHandler (const API_MenuParams* menuParams)
     const auto addonDirectory = GetAddonDirectory ();
     if (addonDirectory.empty ()) {
         ReportLaunchError (
-            "Khong xac dinh duoc thu muc add-on. Hay kiem tra lai cai dat IDPaletteLauncher.");
+            "Cannot determine the add-on directory. Check the IDPaletteLauncher installation.");
         return NoError;
     }
 
@@ -148,8 +154,8 @@ GSErrCode MenuCommandHandler (const API_MenuParams* menuParams)
             (L"IDPaletteLauncher: executable not found or invalid: " +
              executablePath.native () + L"\n").c_str ());
         ReportLaunchError (
-            "Khong tim thay Archicad_ID_Palette.exe. Hay dat file canh add-on "
-            "hoac cau hinh ExecutablePath trong IDPaletteLauncher.ini.");
+            "Archicad_ID_Palette.exe was not found. Place it next to the add-on "
+            "or configure ExecutablePath in IDPaletteLauncher.ini.");
         return NoError;
     }
 
@@ -165,7 +171,7 @@ GSErrCode MenuCommandHandler (const API_MenuParams* menuParams)
     if (reinterpret_cast<INT_PTR> (result) <= 32) {
         const auto errorCode = reinterpret_cast<INT_PTR> (result);
         const std::string message =
-            "Khong the khoi chay ID & Custom Properties Palette. ShellExecute code: " +
+            "Cannot launch the ID & Custom Properties Palette. ShellExecute code: " +
             std::to_string (errorCode) + ".";
         ReportLaunchError (message.c_str ());
         return NoError;
