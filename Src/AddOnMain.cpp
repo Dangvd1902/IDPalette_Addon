@@ -94,9 +94,10 @@ bool IsExecutableFile (const std::filesystem::path& path)
     }
 
     const auto extension = path.extension ().native ();
-    if (CompareStringOrdinal (
+    if (extension.size () != 4 ||
+        CompareStringOrdinal (
             extension.c_str (),
-            static_cast<int> (extension.size ()),
+            4,
             L".exe",
             4,
             TRUE) != CSTR_EQUAL) {
