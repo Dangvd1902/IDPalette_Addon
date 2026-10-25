@@ -1,3 +1,4 @@
+#include "APIEnvir.h"
 #include "ACAPinc.h"
 #include "ResourceIds.hpp"
 
@@ -182,19 +183,19 @@ API_AddonType CheckEnvironment (API_EnvirParams* envir)
         &envir->addOnInfo.name,
         ID_ADDON_INFO,
         1,
-        ACAPI::GetOwnResModule ());
+        ACAPI_GetOwnResModule ());
     RSGetIndString (
         &envir->addOnInfo.description,
         ID_ADDON_INFO,
         2,
-        ACAPI::GetOwnResModule ());
+        ACAPI_GetOwnResModule ());
 
     return APIAddon_Normal;
 }
 
 GSErrCode RegisterInterface (void)
 {
-    return ACAPI::MenuItem_RegisterMenu (
+    return ACAPI_MenuItem_RegisterMenu (
         ID_ADDON_MENU,
         0,
         MenuCode_Palettes,
@@ -203,7 +204,7 @@ GSErrCode RegisterInterface (void)
 
 GSErrCode Initialize (void)
 {
-    return ACAPI::MenuItem_InstallMenuHandler (
+    return ACAPI_MenuItem_InstallMenuHandler (
         ID_ADDON_MENU,
         MenuCommandHandler);
 }
