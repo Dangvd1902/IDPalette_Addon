@@ -1,0 +1,6 @@
+# Runtime dependencies for the ID & Custom Properties Python palette.
+# Match the archicad package version to your installed Archicad release.
+PyQt6>=6.8,<7
+archicad==30.3000
+# Used only when packaging the Python app as a Windows executable.
+pyinstaller>=6.0
