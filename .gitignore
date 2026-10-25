@@ -17,3 +17,10 @@
 *.obj
 *.pdb
 *.ilk
+
+# Python palette virtual environment, packaging outputs, and local settings
+PythonPalette/.venv/
+PythonPalette/build/
+PythonPalette/dist/
+PythonPalette/__pycache__/
+PythonPalette/config.json
