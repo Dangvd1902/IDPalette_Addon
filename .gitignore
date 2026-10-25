@@ -1,0 +1,19 @@
+# CMake build directories
+/build/
+/cmake-build-*/
+
+# Visual Studio user settings and generated files
+.vs/
+*.user
+*.suo
+*.VC.db
+*.VC.VC.opendb
+
+# Build outputs
+*.apx
+*.dll
+*.lib
+*.exp
+*.obj
+*.pdb
+*.ilk
