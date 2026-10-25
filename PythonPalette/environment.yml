@@ -1,0 +1,10 @@
+name: idpalette
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - "PyQt6>=6.8,<7"
+      - "archicad==30.3000"
+      - "pyinstaller>=6.0"
