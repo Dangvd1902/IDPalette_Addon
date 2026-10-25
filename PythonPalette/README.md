@@ -1,46 +1,57 @@
 # Python ID & Custom Properties Palette
 
-This folder contains the Python/PyQt6 application launched by the C++ Archicad add-on in the repository.
+This folder contains the Python/PyQt6 app launched by the C++ Archicad add-on.
 
-The app connects to a running Archicad instance through Graphisoft's official `archicad` Python package. It displays selected built-in properties, optional Classification systems, and selected Custom Properties, and writes edits back through the Archicad JSON command interface.
+The app connects to a running Archicad instance through Graphisoft's official `archicad` Python package. It displays selected built-in properties, optional Classification systems, and selected Custom Properties, and writes edits back through Archicad's JSON command interface.
 
 ## Requirements
 
 - Windows.
-- Archicad 30.3000 (or adjust the `archicad` package version to match the installed release).
-- Python 3.10 or another Python version supported by the installed PyQt6 and Archicad package.
+- Archicad 30.3000 (or update the `archicad` package version to match your installed release).
+- Anaconda or Miniforge/Miniconda with Conda available in the terminal.
 - A project open in Archicad.
 
-The `archicad` package communicates with Archicad through its JSON interface; the C++ launcher only starts this application.
+The `archicad` package is the official Python binding for Archicad's JSON command interface. The C++ launcher only starts the Python application.
+
+## Create the Conda environment
+
+Open **Anaconda Prompt** or **Miniforge Prompt** in this folder, then run:
+
+~~~cmd
+conda env create -f environment.yml
+conda activate idpalette
+~~~
+
+If the environment already exists and you want to refresh its packages:
+
+~~~cmd
+conda env update -f environment.yml --prune
+conda activate idpalette
+~~~
+
+Verify that Python and the packages are available:
+
+~~~cmd
+python --version
+python -m pip show archicad PyQt6 pyinstaller
+~~~
 
 ## Run from source
 
-Open PowerShell in this folder:
-
-~~~powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-python main.py
-~~~
-
-If PowerShell blocks virtual-environment activation, use Command Prompt and run:
+Start Archicad and open a project first. In the same activated Conda environment, run:
 
 ~~~cmd
-.venv\Scripts\activate.bat
-python -m pip install -r requirements.txt
 python main.py
 ~~~
 
-Start Archicad and open a project before launching the palette. When prompted that Archicad cannot be found, choose Retry after opening the project, or Close to exit.
+When prompted that Archicad cannot be found, choose **Retry** after opening the project, or **Close** to exit.
 
-## Build the EXE
+## Build the Windows EXE
 
-From this folder, with the virtual environment active:
+Build on Windows from the same activated Conda environment:
 
-~~~powershell
-pyinstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette main.py
+~~~cmd
+python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette main.py
 ~~~
 
 Expected output:
@@ -49,24 +60,26 @@ Expected output:
 dist\Archicad_ID_Palette.exe
 ~~~
 
-The EXE is built locally and is not committed to Git. Keep `Archicad_ID_Palette.exe` and its writable `config.json` in a folder where the current Windows user has write permission. If the EXE is placed beside the add-on, the launcher can use the default relative path. Otherwise, set the absolute `ExecutablePath` in `IDPaletteLauncher.ini`.
+The EXE is built locally and is not committed to Git. The Python package version must match the installed Archicad release. PyInstaller packages the interpreter and Python dependencies; it does not include Archicad itself.
+
+Keep `Archicad_ID_Palette.exe` and its writable `config.json` in a folder where the current Windows user has write permission. If the EXE is placed next to the `.apx`, the launcher can use the default relative path. Otherwise, set the absolute `ExecutablePath` in `IDPaletteLauncher.ini`.
 
 ## Configuration
 
-The application reads `config.json` from the folder containing `main.py` when running from source, or from the folder containing the EXE when packaged. You can start with `config.json.example`:
+The app reads `config.json` from the folder containing `main.py` when running from source, or from the folder containing the EXE when packaged. You can start with the example file:
 
-~~~powershell
-Copy-Item config.json.example config.json
+~~~cmd
+copy config.json.example config.json
 ~~~
 
-The app also creates the default configuration in memory if the file does not yet exist. Use **⚙ Mục hiển thị** to select Classification systems and Custom Properties, then choose **Lưu cấu hình**. The selection is saved to `config.json`.
+The app also uses a default empty configuration if no config file exists. Use **⚙ Mục hiển thị** to select Classification systems and Custom Properties, then choose **Lưu cấu hình**. The selection is saved to `config.json`.
 
-Do not put personal or sensitive project data in the example configuration committed to Git.
+Do not commit personal or sensitive project data.
 
 ## Operational notes
 
 - Open a project in Archicad before using the palette.
-- The palette reads the first currently selected element for displayed values; edits are applied to all selected elements tracked by the app.
-- Changing a value writes it to Archicad immediately. Test on a copy of the project before bulk editing important data.
-- The application uses the exact top-level window title `ID & Custom Properties`; this must match the launcher INI's `WindowTitle`.
-- The palette checks Archicad's top-level windows periodically. If Archicad is minimized or hidden, the palette hides itself; when Archicad becomes visible again, the palette is restored if it was hidden automatically. The palette remains topmost while Archicad is visible.
+- The palette reads the first currently selected element for display; edits are applied to all selected elements tracked by the app.
+- Changing a value writes it to Archicad immediately. Test on a copy of the project before bulk-editing important data.
+- The app's top-level title is exactly `ID & Custom Properties`; this must match the launcher's `WindowTitle`.
+- The palette checks Archicad's top-level windows periodically. If Archicad is minimized or hidden, the palette hides itself; when Archicad becomes visible again, it restores if it was automatically hidden.
