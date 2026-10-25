@@ -69,3 +69,4 @@ Do not put personal or sensitive project data in the example configuration commi
 - The palette reads the first currently selected element for displayed values; edits are applied to all selected elements tracked by the app.
 - Changing a value writes it to Archicad immediately. Test on a copy of the project before bulk editing important data.
 - The application uses the exact top-level window title `ID & Custom Properties`; this must match the launcher INI's `WindowTitle`.
+- The palette checks Archicad's top-level windows periodically. If Archicad is minimized or hidden, the palette hides itself; when Archicad becomes visible again, the palette is restored if it was hidden automatically. The palette remains topmost while Archicad is visible.
