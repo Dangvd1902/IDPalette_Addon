@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import ctypes
+from ctypes import wintypes
 from PyQt6.QtWidgets import (
     QApplication, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QHBoxLayout, QWidget, QLabel,
@@ -31,6 +32,23 @@ TARGET_BUILTIN_NAMES = {
 
 # Windows API để bắt sự kiện click chuột và phím ESC mà không làm nháy Archicad
 user32 = ctypes.windll.user32
+
+# Use pointer-sized Win32 handles explicitly (important on 64-bit Windows).
+EnumWindowsProc = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+user32.GetForegroundWindow.restype = wintypes.HWND
+user32.GetWindowTextLengthW.argtypes = [wintypes.HWND]
+user32.GetWindowTextLengthW.restype = ctypes.c_int
+user32.GetWindowTextW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]
+user32.GetWindowTextW.restype = ctypes.c_int
+user32.GetAsyncKeyState.argtypes = [ctypes.c_int]
+user32.GetAsyncKeyState.restype = ctypes.c_short
+user32.IsWindowVisible.argtypes = [wintypes.HWND]
+user32.IsWindowVisible.restype = wintypes.BOOL
+user32.IsIconic.argtypes = [wintypes.HWND]
+user32.IsIconic.restype = wintypes.BOOL
+user32.EnumWindows.argtypes = [EnumWindowsProc, wintypes.LPARAM]
+user32.EnumWindows.restype = wintypes.BOOL
+
 VK_LBUTTON = 0x01
 VK_ESCAPE = 0x1B
 
@@ -46,6 +64,39 @@ def is_archicad_active():
     buf = ctypes.create_unicode_buffer(length + 1)
     user32.GetWindowTextW(hwnd, buf, length + 1)
     return "archicad" in buf.value.lower()
+
+
+def is_archicad_window_visible():
+    """Return True if Archicad is visible and not minimized, False if hidden/minimized,
+    or None if no Archicad-titled top-level window can be identified.
+    """
+    window_states = []
+
+    def enum_window(hwnd, _lparam):
+        length = user32.GetWindowTextLengthW(hwnd)
+        if length <= 0:
+            return True
+
+        title_buffer = ctypes.create_unicode_buffer(length + 1)
+        user32.GetWindowTextW(hwnd, title_buffer, length + 1)
+        if "archicad" in title_buffer.value.lower():
+            window_states.append((
+                bool(user32.IsWindowVisible(hwnd)),
+                bool(user32.IsIconic(hwnd))
+            ))
+        return True
+
+    callback = EnumWindowsProc(enum_window)
+    user32.EnumWindows(callback, 0)
+
+    if not window_states:
+        return None
+
+    visible_windows = [state for state in window_states if state[0]]
+    if not visible_windows:
+        return False
+
+    return any(not is_minimized for _is_visible, is_minimized in visible_windows)
 
 
 class NoScrollComboBox(QComboBox):
@@ -229,6 +280,14 @@ class EventDrivenIDPalette(QWidget):
         self.input_watcher.timeout.connect(self.watch_user_input)
         self.input_watcher.start(40)
 
+        # Hide the palette when Archicad is hidden/minimized, then restore it
+        # when Archicad becomes visible again. Keep the independent palette
+        # above Archicad while Archicad itself is visible.
+        self._hidden_by_archicad = False
+        self.visibility_watcher = QTimer(self)
+        self.visibility_watcher.timeout.connect(self.sync_visibility_with_archicad)
+        self.visibility_watcher.start(250)
+
         self.force_fetch_selection()
 
     def watch_user_input(self):
@@ -245,6 +304,21 @@ class EventDrivenIDPalette(QWidget):
 
         self.was_lbutton_down = lbutton_down
         self.was_esc_down = esc_down
+
+    def sync_visibility_with_archicad(self):
+        """Keep the palette out of sight while Archicad is minimized or hidden."""
+        archicad_visible = is_archicad_window_visible()
+
+        # None means no matching top-level window could be identified; do not
+        # unexpectedly hide the palette based on an uncertain detection.
+        if archicad_visible is False:
+            if self.isVisible():
+                self._hidden_by_archicad = True
+                self.hide()
+        elif archicad_visible is True and self._hidden_by_archicad:
+            self._hidden_by_archicad = False
+            self.show()
+            self.raise_()
 
     def load_config(self):
         if os.path.exists(CONFIG_FILE):
