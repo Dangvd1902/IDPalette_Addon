@@ -13,6 +13,8 @@ The app connects to a running Archicad instance through Graphisoft's official `a
 
 The `archicad` package is the official Python binding for Archicad's JSON command interface. The C++ launcher only starts the Python application.
 
+The application currently connects explicitly to the local Archicad JSON API at port `19723`, verified on the development machine. If your Archicad instance is configured to use a different port, update `ARCHICAD_API_PORT` in `main.py` accordingly.
+
 ## Create the Conda environment
 
 Open **Anaconda Prompt** or **Miniforge Prompt** in this folder, then run:
