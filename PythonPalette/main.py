@@ -11,6 +11,9 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import QTimer, Qt
 from archicad import ACConnection
 
+# Explicitly use the JSON API port verified for this Archicad instance.
+ARCHICAD_API_PORT = 19723
+
 # 1. Xác định đúng thư mục gốc để lưu config.json (hỗ trợ cả .py và .exe)
 if getattr(sys, 'frozen', False):
     BASE_DIR = os.path.dirname(sys.executable)
@@ -384,7 +387,7 @@ class EventDrivenIDPalette(QWidget):
 
     def reload_project_data(self):
         # Thử kết nối lại nếu người dùng vừa đổi cửa sổ dự án Archicad
-        new_conn = ACConnection.connect()
+        new_conn = ACConnection.connect(ARCHICAD_API_PORT)
         if new_conn:
             self.conn = new_conn
             self.acc = new_conn.commands
@@ -681,7 +684,7 @@ def main():
     # Vòng lặp kiểm tra kết nối Archicad (hỗ trợ bấm Retry nếu lỡ bật tool trước khi bật Archicad)
     conn = None
     while not conn:
-        conn = ACConnection.connect()
+        conn = ACConnection.connect(ARCHICAD_API_PORT)
         if not conn:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Icon.Warning)
