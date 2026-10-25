@@ -26,9 +26,18 @@ if (NOT EXISTS "${SUPPORT_DIR}/Inc/ACAPinc.h")
         "Check AC_API_DEVKIT_DIR and make sure the matching DevKit is installed.")
 endif ()
 
-if (NOT EXISTS "${SUPPORT_DIR}/Lib/Win/ACAP_STAT.lib")
+# Archicad 27+ places ACAP_STAT.lib directly under Support/Lib.
+# Older DevKits placed the Windows library under Support/Lib/Win.
+if (EXISTS "${SUPPORT_DIR}/Lib/ACAP_STAT.lib")
+    set (AC_API_LIB "${SUPPORT_DIR}/Lib/ACAP_STAT.lib")
+elseif (EXISTS "${SUPPORT_DIR}/Lib/Win/ACAP_STAT.lib")
+    set (AC_API_LIB "${SUPPORT_DIR}/Lib/Win/ACAP_STAT.lib")
+else ()
     message (FATAL_ERROR
-        "Archicad API library was not found: ${SUPPORT_DIR}/Lib/Win/ACAP_STAT.lib")
+        "Archicad API library ACAP_STAT.lib was not found. Checked:\n"
+        "  ${SUPPORT_DIR}/Lib/ACAP_STAT.lib\n"
+        "  ${SUPPORT_DIR}/Lib/Win/ACAP_STAT.lib\n"
+        "Set AC_API_DEVKIT_DIR to the root of the matching Windows Archicad API DevKit.")
 endif ()
 
 file (MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/RO")
@@ -90,7 +99,7 @@ file (GLOB MODULE_LIB_FILES CONFIGURE_DEPENDS
     "${SUPPORT_DIR}/Modules/*/*.lib"
     "${SUPPORT_DIR}/Modules/*/Win/*.lib")
 target_link_libraries (${PROJECT_NAME} PRIVATE
-    "${SUPPORT_DIR}/Lib/Win/ACAP_STAT.lib"
+    "${AC_API_LIB}"
     ${MODULE_LIB_FILES}
     user32.lib
     shell32.lib
