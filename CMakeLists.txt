@@ -26,18 +26,7 @@ if (NOT EXISTS "${SUPPORT_DIR}/Inc/ACAPinc.h")
         "Check AC_API_DEVKIT_DIR and make sure the matching DevKit is installed.")
 endif ()
 
-# APIEnvir.h declares the add-on entry-point environment and ACAPI_* API.
-# DevKit releases may place it in different Support subdirectories.
-file (GLOB_RECURSE API_ENVIR_HEADERS CONFIGURE_DEPENDS
-    "${SUPPORT_DIR}/APIEnvir.h")
-if (NOT API_ENVIR_HEADERS)
-    message (FATAL_ERROR
-        "APIEnvir.h was not found anywhere under ${SUPPORT_DIR}. "
-        "The DevKit appears incomplete or AC_API_DEVKIT_DIR points to the wrong folder. "
-        "Install the official matching Archicad API DevKit.")
-endif ()
-list (GET API_ENVIR_HEADERS 0 API_ENVIR_HEADER)
-get_filename_component (API_ENVIR_INCLUDE_DIR "${API_ENVIR_HEADER}" DIRECTORY)
+# APIEnvir.h is an add-on project header kept in Src, not a shared Support header.
 
 # Archicad 27+ places ACAP_STAT.lib directly under Support/Lib.
 # Older DevKits placed the Windows library under Support/Lib/Win.
@@ -78,6 +67,7 @@ file (WRITE "${CMAKE_BINARY_DIR}/RO/AddOnMain.rc"
 
 add_library (${PROJECT_NAME} SHARED
     Src/AddOnMain.cpp
+    Src/APIEnvir.h
     Src/ResourceIds.hpp
     "${CMAKE_BINARY_DIR}/RO/AddOnMain.rc"
     "${CMAKE_BINARY_DIR}/RO/AddOn.grc.rc2"
@@ -105,7 +95,6 @@ file (GLOB MODULE_INC_DIRS CONFIGURE_DEPENDS
 target_include_directories (${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/Src"
     "${SUPPORT_DIR}/Inc"
-    "${API_ENVIR_INCLUDE_DIR}"
     ${MODULE_INC_DIRS}
 )
 
