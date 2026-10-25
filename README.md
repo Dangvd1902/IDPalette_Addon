@@ -45,25 +45,24 @@ build/out/IDPaletteLauncher.apx
 
 The `.apx` has not been build-tested by CI. Build and validate it against the target Archicad installation before distribution. Add-on loading may also depend on valid Graphisoft-issued MDID values and the applicable Archicad licensing/development mode.
 
-## Build the Python palette EXE
+## Build the Python palette EXE with Conda
 
-Follow [PythonPalette/README.md](PythonPalette/README.md). The short version is:
+Follow [PythonPalette/README.md](PythonPalette/README.md). Make sure Anaconda/Miniforge is installed, then open Anaconda Prompt or Miniforge Prompt:
 
-~~~powershell
+~~~cmd
 cd PythonPalette
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-pyinstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette main.py
+conda env create -f environment.yml
+conda activate idpalette
+python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette main.py
 ~~~
 
 Expected output:
 
 ~~~text
-PythonPalette/dist/Archicad_ID_Palette.exe
+PythonPalette\\dist\\Archicad_ID_Palette.exe
 ~~~
 
-This EXE is built locally and is intentionally not committed to Git. Make sure the `archicad` package version matches the installed Archicad release.
+If the `idpalette` environment already exists, use `conda env update -f environment.yml --prune` instead of `conda env create`. The EXE is built locally and is not committed to Git. The `archicad` package version must match your installed Archicad release.
 
 ## Install and configure
 
