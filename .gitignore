@@ -1,0 +1,26 @@
+# CMake build directories
+/build/
+/cmake-build-*/
+
+# Visual Studio user settings and generated files
+.vs/
+*.user
+*.suo
+*.VC.db
+*.VC.VC.opendb
+
+# Build outputs
+*.apx
+*.dll
+*.lib
+*.exp
+*.obj
+*.pdb
+*.ilk
+
+# Python palette virtual environment, packaging outputs, and local settings
+PythonPalette/.venv/
+PythonPalette/build/
+PythonPalette/dist/
+PythonPalette/__pycache__/
+PythonPalette/config.json
