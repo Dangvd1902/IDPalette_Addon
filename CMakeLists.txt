@@ -74,6 +74,7 @@ add_library (${PROJECT_NAME} SHARED
 )
 
 set_target_properties (${PROJECT_NAME} PROPERTIES
+    OUTPUT_NAME "IDPaletteLauncher_AC29"
     SUFFIX ".apx"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
