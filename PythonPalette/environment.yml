@@ -1,4 +1,4 @@
-name: idpalette
+name: idpalette-ac29
 channels:
   - conda-forge
 dependencies:
@@ -6,5 +6,5 @@ dependencies:
   - pip
   - pip:
       - "PyQt6>=6.8,<7"
-      - "archicad==30.3000"
+      - "archicad==29.3000"
       - "pyinstaller>=6.0"
