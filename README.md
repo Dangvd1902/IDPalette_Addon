@@ -1,105 +1,78 @@
-# IDPalette Add-on
+# IDPalette Add-on — Archicad 29 branch
 
-This repository contains two related components:
+This branch, `support/archicad-29`, targets Archicad 29. The `master` branch remains the primary branch for Archicad 30. Keep build directories, Conda environments and generated executables separate so this branch does not overwrite Archicad 30 artifacts.
 
-1. **C++ Archicad launcher add-on** — registers a menu command in Archicad and opens the palette application.
-2. **Python ID & Custom Properties palette** — the source for `Archicad_ID_Palette.exe`, a PyQt6 app that uses Graphisoft's `archicad` Python package to read and write selected element properties and classifications.
+The project has two components:
 
-The launcher and Python application are separate deliverables. Building the `.apx` does not build the Python EXE automatically.
+1. **C++ launcher add-on** — registers the Archicad menu command and starts the Python palette EXE.
+2. **Python ID & Custom Properties palette** — reads and updates selected element properties and classifications through Graphisoft's Python binding for the local JSON API.
 
-## Repository layout
+Building the `.apx` and building the EXE are separate steps.
 
-- `CMakeLists.txt`: CMake configuration for the C++ Archicad add-on.
-- `Src/AddOnMain.cpp`: add-on lifecycle, menu handler and EXE launcher.
-- `Src/APIEnvir.h`: project-local Windows/API environment header.
-- `Src/AddOn.grc`: add-on menu and metadata resources.
-- `Src/ResourceIds.hpp`: resource IDs used by the resource compiler.
-- `IDPaletteLauncher.ini.example`: sample launcher configuration.
-- `PythonPalette/main.py`: Python/PyQt6 application source.
-- `PythonPalette/requirements.txt`: Python runtime and packaging dependencies.
-- `PythonPalette/config.json.example`: starter configuration.
-- `PythonPalette/README.md`: Python setup, run and EXE packaging instructions.
+## Versions for this branch
+
+- Archicad target: **29**.
+- C++ API DevKit: use the official [Graphisoft Archicad 29 DevKit](https://github.com/GRAPHISOFT/archicad-api-devkit/releases); the latest published Archicad 29 DevKit found during setup is **29.3100**. Confirm the extracted directory name and pass the actual path to CMake.
+- Windows C++ toolset: Visual Studio 2022 / MSVC **v143**.
+- Python API package: Graphisoft `archicad==29.3000` from [PyPI](https://pypi.org/project/archicad/29.3000/).
+
+The C++ DevKit build version and Python package version do not have to share identical build numbers; use the official version intended for Archicad 29 for each component.
 
 ## Build the C++ launcher (.apx)
 
-### Requirements
-
-- Windows and Visual Studio C++ build tools (MSVC).
-- CMake 3.16 or newer.
-- An Archicad API DevKit compatible with the Archicad version you intend to use.
-
-The default `AC_API_DEVKIT_DIR` is `C:/API.Development.Kit.WIN.30.3000`; change this to the actual DevKit location on your machine.
-
-From a Developer PowerShell for Visual Studio or a terminal where CMake and MSBuild are available:
+Install the Archicad 29 DevKit and Visual Studio 2022 Build Tools with MSVC v143, Windows SDK and CMake tools. Open Developer PowerShell for VS 2022 or a terminal where CMake and MSBuild are available.
 
 ~~~powershell
-cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -T v143 -DAC_API_DEVKIT_DIR="C:/API.Development.Kit.WIN.30.3000"
-cmake --build build --config Release
+git switch support/archicad-29
+cmake -S . -B build-ac29 -G "Visual Studio 17 2022" -A x64 -T v143 -DAC_API_DEVKIT_DIR="C:/API.Development.Kit.WIN.29.3100"
+cmake --build build-ac29 --config Release
 ~~~
+
+If your extracted DevKit folder is named differently, replace `C:/API.Development.Kit.WIN.29.3100` with its actual path. Do not point the Archicad 29 build at the Archicad 30 DevKit.
 
 Expected output:
 
 ~~~text
-build/out/IDPaletteLauncher.apx
+build-ac29/out/IDPaletteLauncher.apx
 ~~~
 
-The `.apx` has not been build-tested by CI. Build and validate it against the target Archicad installation before distribution. Add-on loading may also depend on valid Graphisoft-issued MDID values and the applicable Archicad licensing/development mode.
+The C++ target uses `CMakeLists.txt`; its DevKit default is set to the Archicad 29 path on this branch. Use the explicit `-DAC_API_DEVKIT_DIR=...` argument to avoid ambiguity.
 
 ## Build the Python palette EXE with Conda
 
-Follow [PythonPalette/README.md](PythonPalette/README.md). Make sure Anaconda/Miniforge is installed, then open Anaconda Prompt or Miniforge Prompt:
+Open Anaconda Prompt or Miniforge Prompt:
 
 ~~~cmd
 cd PythonPalette
 conda env create -f environment.yml
-conda activate idpalette
-python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette main.py
+conda activate idpalette-ac29
+python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette --distpath dist-ac29 --workpath build-pyinstaller-ac29 main.py
 ~~~
 
 Expected output:
 
 ~~~text
-PythonPalette\\dist\\Archicad_ID_Palette.exe
+PythonPalette\\dist-ac29\\Archicad_ID_Palette.exe
 ~~~
 
-If the `idpalette` environment already exists, use `conda env update -f environment.yml --prune` instead of `conda env create`. The EXE is built locally and is not committed to Git. The `archicad` package version must match your installed Archicad release.
+If the Conda environment already exists, run `conda env update -f environment.yml --prune` instead of creating it again. The generated EXE is a local build output and is not committed to Git.
 
 ## Install and configure
 
-1. Build `IDPaletteLauncher.apx` and `Archicad_ID_Palette.exe` separately.
-2. Copy the `.apx` to a folder Archicad can load add-ons from, or add it through Archicad's Add-On Manager.
-3. Either place `Archicad_ID_Palette.exe` next to the `.apx`, or configure its full path in `IDPaletteLauncher.ini`.
-4. Copy `IDPaletteLauncher.ini.example` to `IDPaletteLauncher.ini` in the same folder as the `.apx`, then adjust the values.
-5. Restart/reload the add-on as needed.
+1. Build both `.apx` and EXE using the Archicad 29 settings above.
+2. Load the `.apx` through Archicad 29 Add-On Manager.
+3. Place the EXE next to the `.apx` or set its full path in `IDPaletteLauncher.ini`.
+4. Ensure `WindowTitle=ID & Custom Properties`.
+5. Preserve `config.json` next to the EXE so the palette configuration remains available.
 
-Example `IDPaletteLauncher.ini`:
+## Test before use
 
-~~~ini
-[Launcher]
-ExecutablePath=Archicad_ID_Palette.exe
-WindowTitle=ID & Custom Properties
-~~~
+- [ ] CMake locates the Archicad 29 DevKit resource compiler, headers and import libraries.
+- [ ] The add-on builds and loads in Archicad 29.
+- [ ] The palette EXE connects to Archicad 29.
+- [ ] Properties and classifications can be read and written in a test project.
+- [ ] Multiple selection behaves as intended before bulk edits.
+- [ ] The palette hides when Archicad is minimized and restores when it becomes visible.
+- [ ] The Archicad 29 build does not overwrite the Archicad 30 build artifacts.
 
-`ExecutablePath` can be an absolute path or a path relative to the `.apx` directory. If the EXE is stored elsewhere, use its real full path. `WindowTitle` must match the palette's top-level window title exactly.
-
-The Python application reads/writes `config.json` next to `main.py` when running from source, or next to the EXE when packaged. Copy `PythonPalette/config.json.example` to `config.json` in the application folder if you want to start with an explicit empty configuration. The palette also creates a default in memory when no config file exists.
-
-## Smoke-test checklist
-
-- [ ] CMake configures with the matching Archicad DevKit.
-- [ ] The C++ add-on builds to an `.apx`.
-- [ ] The Python app starts with Archicad open and a project loaded.
-- [ ] The menu item appears and launches the EXE.
-- [ ] Selecting an element updates the palette display.
-- [ ] A test edit updates the intended property/classification in a test project.
-- [ ] Selecting multiple elements and editing values behaves as expected.
-- [ ] A missing executable produces a useful error.
-- [ ] The palette can be brought to the foreground without opening duplicates.
-- [ ] Verify behavior on each Archicad version and Windows environment you plan to support.
-
-## Security and data safety
-
-- Do not commit credentials, API keys, or sensitive project data.
-- Only launch an EXE built from a trusted source and stored in a directory with appropriate write permissions.
-- Test bulk property changes on a copy of the project before production use.
-- Window-title detection is a pragmatic launcher mechanism, not a strong process identity check. If a stable IPC or process handshake becomes available, consider it for production deployment.
+No Windows/Archicad build or end-to-end test is performed by this documentation update. Test on a copy of the project and validate the resulting files in the target Archicad 29 installation before production use. The registered MDID in `Src/AddOn.grc` is retained from the master's registered add-on.
