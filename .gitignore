@@ -26,6 +26,6 @@ PythonPalette/__pycache__/
 PythonPalette/config.json
 
 # Archicad 29 branch build outputs
-/build-ac29/
-PythonPalette/build-pyinstaller-ac29/
-PythonPalette/dist-ac29/
+/build-archicad29/
+PythonPalette/build-pyinstaller-archicad29/
+PythonPalette/dist-archicad29/
