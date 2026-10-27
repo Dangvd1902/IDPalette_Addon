@@ -9,7 +9,7 @@ set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_EXTENSIONS OFF)
 
-set (AC_API_DEVKIT_DIR "C:/API.Development.Kit.WIN.30.3000" CACHE PATH
+set (AC_API_DEVKIT_DIR "C:/API.Development.Kit.WIN.29.3100" CACHE PATH
     "Path to the installed Archicad API DevKit")
 set (SUPPORT_DIR "${AC_API_DEVKIT_DIR}/Support")
 set (RESCONV_EXE "${SUPPORT_DIR}/Tools/Win/ResConv.exe")
