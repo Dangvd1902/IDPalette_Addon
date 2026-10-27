@@ -4,6 +4,10 @@ This folder contains the Python/PyQt6 palette launched by the C++ Archicad add-o
 
 The application reads and updates selected element properties and classifications through Archicad's local JSON command interface. It is separate from the C++ `.apx` launcher.
 
+## Keep Archicad 29 separate from Archicad 30
+
+Use a dedicated checkout at `C:\Users\Admin\IDPalette_Addon_AC29`. Keep the existing Archicad 30 checkout at `C:\Users\Admin\IDPalette_Addon`. This branch uses its own Conda environment and unique build output names.
+
 ## Requirements
 
 - Windows.
@@ -46,16 +50,16 @@ The app tries Graphisoft's port discovery and falls back to scanning the local J
 Run from the activated `idpalette-ac29` environment:
 
 ~~~cmd
-python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette --distpath dist-ac29 --workpath build-pyinstaller-ac29 main.py
+python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette --distpath dist-archicad29 --workpath build-pyinstaller-archicad29 main.py
 ~~~
 
 Expected output:
 
 ~~~text
-dist-ac29\\Archicad_ID_Palette.exe
+dist-archicad29\\Archicad_ID_Palette_AC29.exe
 ~~~
 
-The EXE is built locally and is not committed to Git. Keep its writable `config.json` next to the EXE. When using the launcher, either place the EXE beside `IDPaletteLauncher.apx` or set the real path in `IDPaletteLauncher.ini`.
+The EXE is built locally and is not committed to Git. Keep its writable `config.json` next to the EXE. When using the launcher, either place the EXE beside `IDPaletteLauncher_AC29.apx` or set the real path in `IDPaletteLauncher.ini`.
 
 ## Install and test
 
