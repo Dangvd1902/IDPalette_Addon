@@ -56,7 +56,7 @@ python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_I
 Expected output:
 
 ~~~text
-dist-archicad29\\Archicad_ID_Palette_AC29.exe
+dist-archicad29\Archicad_ID_Palette_AC29.exe
 ~~~
 
 The EXE is built locally and is not committed to Git. Keep its writable `config.json` next to the EXE. When using the launcher, either place the EXE beside `IDPaletteLauncher_AC29.apx` or set the real path in `IDPaletteLauncher.ini`.
