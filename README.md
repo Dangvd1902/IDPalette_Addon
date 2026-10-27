@@ -33,7 +33,6 @@ The C++ DevKit build version and Python package version do not have to share ide
 Install the Archicad 29 DevKit and Visual Studio 2022 Build Tools with MSVC v143, Windows SDK and CMake tools. Open Developer PowerShell for VS 2022 or a terminal where CMake and MSBuild are available.
 
 ~~~powershell
-git switch support/archicad-29
 cd C:\Users\Admin\IDPalette_Addon_AC29
 cmake -S . -B build-archicad29 -G "Visual Studio 17 2022" -A x64 -T v143 -DAC_API_DEVKIT_DIR="C:/API.Development.Kit.WIN.29.3100"
 cmake --build build-archicad29 --config Release
@@ -54,7 +53,7 @@ The C++ target uses `CMakeLists.txt`; its DevKit default is set to the Archicad 
 Open Anaconda Prompt or Miniforge Prompt:
 
 ~~~cmd
-cd PythonPalette
+cd /d C:\Users\Admin\IDPalette_Addon_AC29\PythonPalette
 conda env create -f environment.yml
 conda activate idpalette-ac29
 python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette_AC29 --distpath dist-archicad29 --workpath build-pyinstaller-archicad29 main.py
@@ -63,7 +62,7 @@ python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_I
 Expected output:
 
 ~~~text
-PythonPalette\\dist-archicad29\\Archicad_ID_Palette_AC29.exe
+PythonPalette\dist-archicad29\Archicad_ID_Palette_AC29.exe
 ~~~
 
 If the Conda environment already exists, run `conda env update -f environment.yml --prune` instead of creating it again. The generated EXE is a local build output and is not committed to Git.
