@@ -24,8 +24,8 @@ Install the Archicad 29 DevKit and Visual Studio 2022 Build Tools with MSVC v143
 
 ~~~powershell
 git switch support/archicad-29
-cmake -S . -B build-ac29 -G "Visual Studio 17 2022" -A x64 -T v143 -DAC_API_DEVKIT_DIR="C:/API.Development.Kit.WIN.29.3100"
-cmake --build build-ac29 --config Release
+cmake -S . -B build-archicad29 -G "Visual Studio 17 2022" -A x64 -T v143 -DAC_API_DEVKIT_DIR="C:/API.Development.Kit.WIN.29.3100"
+cmake --build build-archicad29 --config Release
 ~~~
 
 If your extracted DevKit folder is named differently, replace `C:/API.Development.Kit.WIN.29.3100` with its actual path. Do not point the Archicad 29 build at the Archicad 30 DevKit.
@@ -33,7 +33,7 @@ If your extracted DevKit folder is named differently, replace `C:/API.Developmen
 Expected output:
 
 ~~~text
-build-ac29/out/IDPaletteLauncher.apx
+build-archicad29/out/IDPaletteLauncher_AC29.apx
 ~~~
 
 The C++ target uses `CMakeLists.txt`; its DevKit default is set to the Archicad 29 path on this branch. Use the explicit `-DAC_API_DEVKIT_DIR=...` argument to avoid ambiguity.
@@ -46,13 +46,13 @@ Open Anaconda Prompt or Miniforge Prompt:
 cd PythonPalette
 conda env create -f environment.yml
 conda activate idpalette-ac29
-python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette --distpath dist-ac29 --workpath build-pyinstaller-ac29 main.py
+python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette --distpath dist-archicad29 --workpath build-pyinstaller-archicad29 main.py
 ~~~
 
 Expected output:
 
 ~~~text
-PythonPalette\\dist-ac29\\Archicad_ID_Palette.exe
+PythonPalette\\dist-archicad29\\Archicad_ID_Palette_AC29.exe
 ~~~
 
 If the Conda environment already exists, run `conda env update -f environment.yml --prune` instead of creating it again. The generated EXE is a local build output and is not committed to Git.
