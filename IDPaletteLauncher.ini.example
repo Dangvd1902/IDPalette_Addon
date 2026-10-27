@@ -1,6 +1,6 @@
 [Launcher]
 ; Absolute path or path relative to the directory containing IDPaletteLauncher.apx.
-ExecutablePath=Archicad_ID_Palette.exe
+ExecutablePath=Archicad_ID_Palette_AC29.exe
 
 ; Must exactly match the palette's top-level window title.
 WindowTitle=ID & Custom Properties
