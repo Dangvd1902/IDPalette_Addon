@@ -1,6 +1,16 @@
 # IDPalette Add-on — Archicad 29 branch
 
-This branch, `support/archicad-29`, targets Archicad 29. The `master` branch remains the primary branch for Archicad 30. Keep build directories, Conda environments and generated executables separate so this branch does not overwrite Archicad 30 artifacts.
+This branch, `support/archicad-29`, targets Archicad 29. The `master` branch remains the primary branch for Archicad 30.
+
+## Keep AC29 and AC30 in separate folders
+
+Keep your existing Archicad 30 checkout at `C:\Users\Admin\IDPalette_Addon`. Create a second clone for Archicad 29 instead of switching the existing checkout:
+
+~~~cmd
+git clone --branch support/archicad-29 --single-branch https://github.com/Dangvd1902/IDPalette_Addon.git C:\Users\Admin\IDPalette_Addon_AC29
+~~~
+
+The AC29 branch uses a separate CMake build directory, a distinct add-on filename, a distinct EXE filename, and its own Conda environment.
 
 The project has two components:
 
@@ -24,6 +34,7 @@ Install the Archicad 29 DevKit and Visual Studio 2022 Build Tools with MSVC v143
 
 ~~~powershell
 git switch support/archicad-29
+cd C:\Users\Admin\IDPalette_Addon_AC29
 cmake -S . -B build-archicad29 -G "Visual Studio 17 2022" -A x64 -T v143 -DAC_API_DEVKIT_DIR="C:/API.Development.Kit.WIN.29.3100"
 cmake --build build-archicad29 --config Release
 ~~~
@@ -46,7 +57,7 @@ Open Anaconda Prompt or Miniforge Prompt:
 cd PythonPalette
 conda env create -f environment.yml
 conda activate idpalette-ac29
-python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette --distpath dist-archicad29 --workpath build-pyinstaller-archicad29 main.py
+python -m PyInstaller --noconfirm --clean --onefile --windowed --name Archicad_ID_Palette_AC29 --distpath dist-archicad29 --workpath build-pyinstaller-archicad29 main.py
 ~~~
 
 Expected output:
@@ -59,11 +70,10 @@ If the Conda environment already exists, run `conda env update -f environment.ym
 
 ## Install and configure
 
-1. Build both `.apx` and EXE using the Archicad 29 settings above.
-2. Load the `.apx` through Archicad 29 Add-On Manager.
-3. Place the EXE next to the `.apx` or set its full path in `IDPaletteLauncher.ini`.
-4. Ensure `WindowTitle=ID & Custom Properties`.
-5. Preserve `config.json` next to the EXE so the palette configuration remains available.
+1. Build `IDPaletteLauncher_AC29.apx` and `Archicad_ID_Palette_AC29.exe` using the settings above.
+2. Copy both into a dedicated AC29 add-on deployment folder, alongside an `IDPaletteLauncher.ini` that sets `ExecutablePath=Archicad_ID_Palette_AC29.exe` and `WindowTitle=ID & Custom Properties`.
+3. Load `IDPaletteLauncher_AC29.apx` through Archicad 29 Add-On Manager.
+4. Preserve `config.json` next to the EXE so the palette configuration remains available.
 
 ## Test before use
 
