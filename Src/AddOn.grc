@@ -6,7 +6,7 @@
 }
 
 'STR#' ID_ADDON_MENU "Menu Strings" {
-/* [  1] */     "ID & Custom Properties Palette"
+/* [  1] */     "ID & Custom Properties Palette^E3^ES^EE^EI^ED^EL^EW^ET^EM"
 }
 
 'MDID' 32500 "Add-On Identifier" {
